@@ -1,0 +1,7 @@
+info [*] Waiting for messages in queue. To exit press CTRL+C
+info [*] Waiting for messages in queue. To exit press CTRL+C
+info completed processing google.com
+info completed processing google.com
+uncaught Error: Unexpected close
+uncaught DisconnectedError: Ran out of retries trying to reconnect to "localhost:27017". Try setting `server.reconnectTries` and `server.reconnectInterval` to something higher.
+uncaught Error: Heartbeat timeout

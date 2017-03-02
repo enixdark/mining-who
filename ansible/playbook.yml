@@ -1,0 +1,17 @@
+# # # # - hosts: all
+# # # # # #   gather_facts: true
+- name: "install node"
+  hosts: core_install
+  strategy: free
+  # serial:
+  #   - 1
+  #   - 5
+  #   - 10
+  # strategy: debug
+  gather_facts: true
+  vars_files:
+    - ./environments/staging/group_vars/core_install.yml
+  roles:
+    - core_install
+  become: yes
+

@@ -1,0 +1,14 @@
+Error: Unexpected close
+    at succeed (/home/cqshinn/SVN/node-whois/worker/node_modules/amqplib/lib/connection.js:270:13)
+    at onOpenOk (/home/cqshinn/SVN/node-whois/worker/node_modules/amqplib/lib/connection.js:252:5)
+    at /home/cqshinn/SVN/node-whois/worker/node_modules/amqplib/lib/connection.js:165:32
+    at /home/cqshinn/SVN/node-whois/worker/node_modules/amqplib/lib/connection.js:159:12
+    at Socket.recv (/home/cqshinn/SVN/node-whois/worker/node_modules/amqplib/lib/connection.js:497:12)
+    at Object.onceWrapper (events.js:291:19)
+    at emitNone (events.js:86:13)
+    at Socket.emit (events.js:186:7)
+    at emitReadable_ (_stream_readable.js:432:10)
+    at emitReadable (_stream_readable.js:426:7)
+    at readableAddChunk (_stream_readable.js:187:13)
+    at Socket.Readable.push (_stream_readable.js:134:10)
+    at TCP.onread [as _originalOnread] (net.js:551:20)

@@ -1,0 +1,52 @@
+- name: "update and upgrade ubuntu"
+  apt: update_cache=yes cache_valid_time=3600
+  tags:
+    - update
+- name: "add repo node.js"
+  get_url:
+    url: https://deb.nodesource.com/setup_7.x
+    dest: /opt
+    mode: 0644
+- name: "change exec to file"
+  command: chmod +x /opt/setup_7.x 
+- name: "run file"
+  command: bash /opt/setup_7.x 
+- name: Install node.js
+  apt:
+    name: nodejs 
+    state: present
+- name: Install whois
+  apt:
+    name: whois 
+    state: present
+- name: "copy project into server"
+  copy:
+    src: ./projects/worker
+    dest: /opt/
+    # owner: vagrant
+    # group: vagrant
+    # mode: 0644
+- name: task name
+  command: pwd chdir=/opt/worker
+- name: "npm install babel node"
+  command: npm i -g babel-cli pm2
+- name: "npm install package for project"
+  command: npm i chdir=/opt/worker
+- name: "stop node app for project"
+  command: pm2 stop worker.js chdir=/opt/worker
+  ignore_errors: yes
+- name: "run node app for project"
+  command: pm2 start worker.js chdir=/opt/worker
+  # command: bash start.sh  chdir=/opt/worker
+  environment: 
+    RABBITMQ_URI: "{{ RABBITMQ_URI }}"
+    MONGODB_URI: "{{ MONGODB_URI }}"
+    RABBITMQ_CHANNEL: "{{ RABBITMQ_CHANNEL }}"
+    RABBITMQ_QUEUE: "{{ RABBITMQ_QUEUE }}"
+    RABBITMQ_ROUTE: "{{ RABBITMQ_ROUTE }}"
+    RABBITMQ_DURABLE: "{{ RABBITMQ_DURABLE }}"
+    RABBITMQ_PERSISTENT: "{{ RABBITMQ_PERSISTENT }}"
+    RABBITMQ_TIMEOUT: "{{ RABBITMQ_TIMEOUT }}"
+    ENV: "{{ ENV }}"
+  become: True
+  

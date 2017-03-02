@@ -1,0 +1,183 @@
+version: '2'
+services:
+ 
+  worker:
+    # container_name: worker
+    build: worker/
+    command: babel-node worker.js
+    environment:
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
+      - RABBITMQ_CHANNEL=channel
+      - RABBITMQ_QUEUE=queue
+      - RABBITMQ_ROUTE='#'
+      - RABBITMQ_DURABLE=true
+      - RABBITMQ_PERSISTENT=true
+      - RABBITMQ_TIMEOUT=true
+      - ENV=development
+      - RABBITMQ_FETCH_MESSAGE=50,
+      - RABBITMQ_ACK_TIMEOUT:5000,
+      - MONGODB_URI=mongodb://mongodb:27017/dns
+    links:
+      - rabbitmq
+      - mongodb
+      - logstash
+    depends_on:
+      - logstash
+      - rabbitmq
+      - mongodb
+    # uncomment if use log driver to listen log from every docker container that's running 
+    # logging:
+    #   driver: gelf
+    #   options:
+    #     # tag: "docker.{{.Name}}"
+    #     gelf-address: udp://0.0.0.0:5000
+
+  mongodb:                                                                                                                            
+    container_name: mongodb                                                                                                          
+    image: mongo                                                                                                                    
+    environment:                                                                                                                      
+      # - MONGO_USER=root                                                                                                               
+      # - MONGODB_PASS=root                                                                                                            
+      - MONGODB_DATABASE=dsn                                                                                                         
+    ports:                                                                                                                            
+      - 27017:27017                                                                                                                  
+      - 28017:28017   
+
+  rabbitmq:                                                                                                                           
+    container_name: rabbitmq                                                                                                          
+    image: rabbitmq:3-management                                                                                                      
+    ports:                                                                                                                            
+      - 5672:5672                                                                                                                     
+      - 8888:15672                                                                                                                    
+    environment:                                                                                                                      
+      - RABBITMQ_DEFAULT_USER=guest                                                                                                   
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  postgres:
+    image: postgres:9.5
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=sentry
+    volumes:
+      - /var/lib/postgresql/:/var/lib/postgresql
+    container_name: sentry-postgres
+
+  logstash:
+    container_name: logstash
+    build: ./elk/logstash/
+    expose:
+        - "5000"
+    ports:
+        - "5000:5000"
+        - "5000:5000/udp"
+    # volumes:
+    #   - ./logstash:/etc/logstash
+    environment:
+      - LS_HEAP_SIZE=1024m
+      - LOGSTASH_PORT=5000
+      - ELASTICSEARCH_URI=elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic 
+      - ELASTICSEARCH_PASSWORD=changeme
+    links:
+      - elasticsearch
+
+  elasticsearch:
+    # privileged: true
+    container_name: elasticsearch
+    build: ./elk/elasticsearch/
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      # - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTICSEARCH_USERNAME=elastic 
+      - ELASTICSEARCH_PASSWORD=changeme
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 262144
+        hard: 262144
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    
+  kibana:
+    container_name: kibana
+    build: ./elk/kibana/
+    # volumes:
+    #   - ./kibana/config/:/etc/kibana/
+    ports:
+      - "5601:5601"
+    environment:
+      - KIBANA_PORT=5601
+      - KIBANA_HOST=0.0.0.0
+      - ELASTICSEARCH_URI=http:\/\/elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic 
+      - ELASTICSEARCH_PASSWORD=changeme
+    depends_on:
+      - elasticsearch
+
+  # uncomment to use alert service for ci/cd or arlet monitoring if use, however erevy service app need coding sentry/raven in its project
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - "6379:6379"
+  #   container_name: sentry-redis
+
+  # sentry:
+  #   image: sentry
+  #   environment:
+  #     - SENTRY_SERVER_EMAIL=
+  #     - SENTRY_EMAIL_HOST=
+  #     - SENTRY_EMAIL_PORT=
+  #     - SENTRY_EMAIL_USER=
+  #     - SENTRY_EMAIL_PASSWORD=
+  #     - SENTRY_EMAIL_USE_TLS=True
+  #     - SENTRY_SECRET_KEY=
+  #   volumes:
+  #     - /etc/sentry:/etc/sentry
+  #   ports:
+  #     - "127.0.0.1:8080:9000"
+  #   links:
+  #     - postgres
+  #     - redis
+  #   container_name: my-sentry
+
+  # beat:
+  #   image: sentry
+  #   environment:
+  #     - SENTRY_SERVER_EMAIL=
+  #     - SENTRY_EMAIL_HOST=
+  #     - SENTRY_EMAIL_PORT=
+  #     - SENTRY_EMAIL_USER=
+  #     - SENTRY_EMAIL_PASSWORD=
+  #     - SENTRY_EMAIL_USE_TLS=True
+  #     - SENTRY_SECRET_KEY=
+  #   links:
+  #     - postgres
+  #     - redis
+  #   command: sentry celery beat
+  #   container_name: sentry-celery-beat
+
+  # worker:
+  #   image: sentry
+  #   environment:
+  #     - SENTRY_SERVER_EMAIL=
+  #     - SENTRY_EMAIL_HOST=
+  #     - SENTRY_EMAIL_PORT=
+  #     - SENTRY_EMAIL_USER=
+  #     - SENTRY_EMAIL_PASSWORD=
+  #     - SENTRY_EMAIL_USE_TLS=True
+  #     - SENTRY_SECRET_KEY=
+  #   links:
+  #     - postgres
+  #     - redis
+  #   command: sentry celery worker
+  #   container_name: sentry-celery-worker                                                                                      
+  

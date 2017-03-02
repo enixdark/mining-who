@@ -1,0 +1,67 @@
+const mongoose = require('mongoose')
+const fieldsAliasPlugin = require('mongoose-aliasfield')
+let whoSchema = mongoose.Schema({
+    'server_name': { type: mongoose.Schema.Types.Mixed, alias: 'Server Name'},
+    'ip_address': { type: mongoose.Schema.Types.Mixed, alias: 'IP Address'},
+    'registrar':   { type: mongoose.Schema.Types.Mixed, alias: 'Registrar'},
+    'whois_server':  { type: mongoose.Schema.Types.Mixed, alias: 'Whois Server'},
+    'domain_name':  { type: mongoose.Schema.Types.Mixed, alias: 'Domain Name', index: true , required: true},
+    'sponsoring_registrar_iana_id': {type: String, alias: 'Sponsoring Registrar IANA ID'},
+    'name_server':  { type: mongoose.Schema.Types.Mixed, alias: 'Name Server'},
+    'updated_date': {type: Date, alias: 'Updated Date'},
+    'creation_date': {type: Date, alias: 'Creation Date'},
+    'expiration_date': {type: Date, alias: 'Expiration Date'},
+    'registry_domain_id': {type: String, alias: 'Registry Domain ID'},
+    'registrar_whois_server': {type: String, alias: 'Registrar WHOIS Server'},
+    'registrar_iana_id': {type: String, alias: 'Registrar IANA ID'},
+    'registrar_abuse_contact_email': {type: String, alias: 'Registrar Abuse Contact Email'},
+    'registrar_abuse_contact_phone': {type: String, alias: 'Registrar Abuse Contact Phone'},
+    'registry_registrant_id': {type: String, alias: 'Registry Registrant ID'},
+    'registrant_name': {type: String, alias: 'Registrant Name'},
+    'registrant_organization': {type: String, alias: 'Registrant Organization'},
+    'registrant_street': {type: String, alias: 'Registrant Street'},
+    'registrant_city': {type: String, alias: 'Registrant City'},
+    'registrant_state_and_province': {type: String, alias: 'Registrant State/Province'},
+    'registrant_postal_code': {type: String, alias: 'Registrant Postal Code'},
+    'registrant_country': {type: String, alias: 'Registrant Country'},
+    'registrant_phone': {type: String, alias: 'Registrant Phone'},
+    'registrant_phone_ext': {type: String, alias: 'Registrant Phone Ext'},
+    'registrant_fax': {type: String, alias: 'Registrant Fax'},
+    'registrant_fax_ext': {type: String, alias: 'Registrant Fax Ext'},
+    'registrant_email': {type: String, alias: 'Registrant Email'},
+    'registry_admin_id': {type: String, alias: 'Registry Admin ID'},
+    'admin_name': {type: String, alias: 'Admin Name'},
+    'admin_organization': {type: String, alias: 'Admin Organization'},
+    'admin_street': {type: String, alias: 'Admin Street'},
+    'admin_city': {type: String, alias: 'Admin City'},
+    'admin_state_and_province': {type: String, alias: 'Admin State/Province'},
+    'admin_postal_code': {type: String, alias: 'Admin Postal Code'},
+    'admin_country': {type: String, alias: 'Admin Country'},
+    'admin_phone': {type: String, alias: 'Admin Phone'},
+    'admin_phone_ext': {type: String, alias: 'Admin Phone Ext'},
+    'admin_fax': {type: String, alias: 'Admin Fax'},
+    'admin_fax_ext': {type: String, alias: 'Admin Fax Ext'},
+    'admin_email': {type: String, alias: 'Admin Email'},
+    'registry_tech_id': {type: String, alias: 'Registry Tech ID'},
+    'tech_name': {type: String, alias: 'Tech Name'},
+    'tech_organization': {type: String, alias: 'Tech Organization'},
+    'tech_street': {type: String, alias: 'Tech Street'},
+    'tech_city': {type: String, alias: 'Tech City'},
+    'tech_state_and_province': {type: String, alias: 'Tech State/Province'},
+    'tech_postal_code': {type: String, alias: 'Tech Postal Code'},
+    'tech_country': {type: String, alias: 'Tech Country'},
+    'tech_phone': {type: String, alias: 'Tech Phone'},
+    'tech_phone_ext': {type: String, alias: 'Tech Phone Ext'},
+    'tech_fax': {type: String, alias: 'Tech Fax'},
+    'tech_fax_ext': {type: String, alias: 'Tech Fax Ext'},
+    'tech_email': {type: String, alias: 'Tech Email'},
+    'dnssec': {type: String, alias: 'DNSSEC'},
+    'error': {type: String}
+})
+
+// whoSchema.methods.method = function(){}
+whoSchema.set({'collection': 'whois'})
+whoSchema.plugin(fieldsAliasPlugin)
+
+let Who = mongoose.model('whois', whoSchema)
+module.exports = Who

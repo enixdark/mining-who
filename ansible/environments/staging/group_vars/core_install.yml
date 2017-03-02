@@ -1,0 +1,9 @@
+RABBITMQ_URI: amqp://guest:guest@10.0.0.236:5672
+RABBITMQ_CHANNEL: channel
+RABBITMQ_QUEUE: task_queue
+RABBITMQ_ROUTE: '#'
+RABBITMQ_DURABLE: true
+RABBITMQ_PERSISTENT: true
+RABBITMQ_TIMEOUT: true
+ENV: development
+MONGODB_URI: mongodb://10.0.0.236:27017/dns
